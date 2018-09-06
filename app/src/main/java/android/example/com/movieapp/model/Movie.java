@@ -4,14 +4,17 @@ import java.io.Serializable;
 
 public class Movie implements Serializable {
     private int id;
-    private  int voteAverage;
+    private double voteAverage;
     private String originalTitle;
     private String title;
     private String overview;
     private String releaseDate;
     private String posterPath;
 
-    public Movie(int id, int voteAverage, String originalTitle, String title, String overview, String releaseDate, String posterPath) {
+    public Movie(){
+    }
+
+    public Movie(int id, double voteAverage, String originalTitle, String title, String overview, String releaseDate, String posterPath) {
         this.id = id;
         this.voteAverage = voteAverage;
         this.originalTitle = originalTitle;
@@ -29,11 +32,11 @@ public class Movie implements Serializable {
         this.id = id;
     }
 
-    public int getVoteAverage() {
+    public double getVoteAverage() {
         return voteAverage;
     }
 
-    public void setVoteAverage(int voteAverage) {
+    public void setVoteAverage(double voteAverage) {
         this.voteAverage = voteAverage;
     }
 

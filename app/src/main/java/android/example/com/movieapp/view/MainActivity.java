@@ -2,7 +2,7 @@ package android.example.com.movieapp.view;
 
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
-import android.example.com.movieapp.utils.Api;
+import android.example.com.movieapp.utils.ApiUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
-    private Api apiKey;
+    private ApiUtils apiUtilsKey;
     private final String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
     private String moviesUrl, popularUrl, topRatedUrl;
     private ArrayList<Movie> moviesList, mostPopularList, topRatedList;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         progressBar = findViewById(R.id.pb_load);
-        apiKey = new Api();
+        apiUtilsKey = new ApiUtils();
     }
 
     //AsyncTask to handle network request to moviedb
@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            moviesUrl = BASE_URL + apiKey.getAPI_KEY();
-            popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="+ apiKey.getAPI_KEY();
-            topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key="+ apiKey.getAPI_KEY();
+            moviesUrl = BASE_URL + apiUtilsKey.getAPI_KEY();
+            popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="+ apiUtilsKey.getAPI_KEY();
+            topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key="+ apiUtilsKey.getAPI_KEY();
 
             moviesList = new ArrayList<>();
             mostPopularList = new ArrayList<>();
