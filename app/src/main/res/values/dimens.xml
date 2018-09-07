@@ -4,4 +4,5 @@
     <dimen name="padding">10dp</dimen>
     <dimen name="image_dimension">500dp</dimen>
     <dimen name="margin_small">5dp</dimen>
+    <dimen name="card_view_elevation">4dp</dimen>
 </resources>
