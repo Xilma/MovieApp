@@ -1,8 +1,10 @@
 package android.example.com.movieapp.view;
 
+import android.annotation.SuppressLint;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
 import android.example.com.movieapp.utils.ApiUtils;
+import android.example.com.movieapp.utils.NetworkUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,8 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
     private ApiUtils apiUtilsKey;
-    private final String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
-    private String moviesUrl, popularUrl, topRatedUrl;
     private ArrayList<Movie> moviesList, mostPopularList, topRatedList;
 
     @Override
@@ -29,9 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.pb_load);
         apiUtilsKey = new ApiUtils();
+        new DisplayMovies().execute();
     }
 
     //AsyncTask to handle network request to moviedb
+    @SuppressLint("StaticFieldLeak")
     public class DisplayMovies extends AsyncTask<Void,Void,Void> {
 
         @Override
@@ -43,14 +45,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            moviesUrl = BASE_URL + apiUtilsKey.getAPI_KEY();
-            popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="+ apiUtilsKey.getAPI_KEY();
-            topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key="+ apiUtilsKey.getAPI_KEY();
+            String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
+            String moviesUrl = BASE_URL + apiUtilsKey.getAPI_KEY();
+            //String popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + apiUtilsKey.getAPI_KEY();
+            //String topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + apiUtilsKey.getAPI_KEY();
 
             moviesList = new ArrayList<>();
             mostPopularList = new ArrayList<>();
             topRatedList = new ArrayList<>();
 
+            if(NetworkUtils.networkStatus(MainActivity.this)){
+                //Get all movies
+                moviesList = NetworkUtils.getMovie(moviesUrl);
+            }else{
+                Toast.makeText(MainActivity.this,"No Internet Connection",Toast.LENGTH_LONG).show();
+            }
             return null;
         }
 
