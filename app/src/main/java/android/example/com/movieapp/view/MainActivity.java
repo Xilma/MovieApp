@@ -1,11 +1,13 @@
 package android.example.com.movieapp.view;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
 import android.example.com.movieapp.model.RecyclerAdapter;
 import android.example.com.movieapp.utils.ApiUtils;
-import android.example.com.movieapp.utils.NetworkUtils;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -70,12 +72,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            //String popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + apiUtilsKey.getAPI_KEY();
-            //String topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + apiUtilsKey.getAPI_KEY();
+            String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
+            String url = BASE_URL + apiUtilsKey.getAPI_KEY();
 
-            if(NetworkUtils.networkStatus(MainActivity.this)){
+            if(networkStatus(MainActivity.this)){
                 //Get all movies
-                parseJson();
+                parseJson(url);
             }else{
                 Toast.makeText(MainActivity.this,"No Internet Connection",Toast.LENGTH_LONG).show();
             }
@@ -89,9 +91,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void parseJson() {
-        String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
-        String moviesUrl = BASE_URL + apiUtilsKey.getAPI_KEY();
+    private void parseJson(String moviesUrl) {
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
                 new Response.Listener<JSONObject>() {
@@ -139,6 +139,18 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+    //Method to check if device is connected to internet or not
+    public static Boolean networkStatus(Context context) {
+        ConnectivityManager manager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = null;
+        if (manager != null) {
+            networkInfo = manager.getActiveNetworkInfo();
+        }
+
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -160,12 +172,14 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.sort_most_popular) {
-            Toast.makeText(this, "Sort by most popular", Toast.LENGTH_SHORT).show();
+            String popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + apiUtilsKey.getAPI_KEY();
+            parseJson(popularUrl);
             return true;
         }
 
         if (id == R.id.sort_top_rated) {
-            Toast.makeText(this, "Sort by top rated", Toast.LENGTH_SHORT).show();
+            String topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + apiUtilsKey.getAPI_KEY();
+            parseJson(topRatedUrl);
             return true;
         }
 
