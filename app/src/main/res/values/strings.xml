@@ -1,10 +1,13 @@
 <resources>
-    <string name="app_name">MovieApp</string>
+    <string name="app_name">Popular Movies</string>
+    <!--Menu titles-->
     <string name="main_title">Movies</string>
     <string name="details_title">Movie Name</string>
     <string name="sortby">Sort by:</string>
     <string name="most_popular">Most Popular</string>
     <string name="top_rated">Top Rated</string>
+
+    <!--Movie details strings-->
     <string name="image_description">Movie poster</string>
     <string name="movie_title">Title:</string>
     <string name="release_date">Release date:</string>

@@ -3,9 +3,7 @@ package android.example.com.movieapp.model;
 import java.io.Serializable;
 
 public class Movie implements Serializable {
-    private int id;
-    private double voteAverage;
-    private String originalTitle;
+    private String voteAverage;
     private String title;
     private String overview;
     private String releaseDate;
@@ -14,38 +12,20 @@ public class Movie implements Serializable {
     public Movie(){
     }
 
-    public Movie(int id, double voteAverage, String originalTitle, String title, String overview, String releaseDate, String posterPath) {
-        this.id = id;
+    public Movie(String voteAverage, String title, String overview, String releaseDate, String posterPath) {
         this.voteAverage = voteAverage;
-        this.originalTitle = originalTitle;
         this.title = title;
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.posterPath = posterPath;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public double getVoteAverage() {
+    public String getVoteAverage() {
         return voteAverage;
     }
 
-    public void setVoteAverage(double voteAverage) {
+    public void setVoteAverage(String voteAverage) {
         this.voteAverage = voteAverage;
-    }
-
-    public String getOriginalTitle() {
-        return originalTitle;
-    }
-
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
     }
 
     public String getTitle() {

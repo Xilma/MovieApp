@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 public class DetailsActivity extends AppCompatActivity {
 
     private TextView movieTitle, releaseDate, userRating, synopsis;
@@ -43,7 +45,11 @@ public class DetailsActivity extends AppCompatActivity {
         userRating.setText(voteAverage);
         synopsis.setText(overview);
         Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieThumbnail);
+        setActionBarTitle(title);
+    }
 
+    public void setActionBarTitle(String title) {
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }
 
     @Override

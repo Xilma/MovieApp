@@ -4,21 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".view.MainActivity">
-
-    <ProgressBar
-        android:id="@+id/pb_load"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        style="?android:attr/progressBarStyle"
-        android:visibility="invisible"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_movie_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_margin="@dimen/padding">
     </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

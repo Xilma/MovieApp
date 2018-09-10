@@ -1,5 +1,6 @@
 package android.example.com.movieapp.view;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
@@ -58,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
     //Get movie details using volley library and populate recyclerview
     private void parseJson(String moviesUrl) {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.show();
+        progressDialog.setMessage("Loading movies...");
+
         if (networkStatus(MainActivity.this)) {
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
                     new Response.Listener<JSONObject>() {
@@ -69,27 +74,23 @@ public class MainActivity extends AppCompatActivity {
                                 //Loop through items in resultsArray
                                 for (int i = 0; i < resultsArray.length(); i++) {
                                     JSONObject resultsObject = resultsArray.getJSONObject(i);
-                                    //Set movie id value
-                                    int movieId = resultsObject.getInt("id");
                                     //Set movie vote average value
-                                    double averageVote = resultsObject.getDouble("vote_average");
+                                    String averageVote = resultsObject.getString("vote_average");
                                     //Set movie title
                                     String movieTitle = resultsObject.getString("title");
                                     //Set movie poster path
                                     String posterPath = resultsObject.getString("poster_path");
-                                    //Set movie original title
-                                    String originalTitle = resultsObject.getString("original_title");
                                     //Set movie overview
                                     String movieOverview = resultsObject.getString("overview");
                                     //Set movie release date
                                     String releaseDate = resultsObject.getString("release_date");
 
-                                    movieItems.add(new Movie(movieId, averageVote, originalTitle, movieTitle,
+                                    movieItems.add(new Movie(averageVote, movieTitle,
                                             movieOverview, releaseDate, posterPath));
 
+                                    progressDialog.dismiss();
                                     recyclerAdapter = new RecyclerAdapter(MainActivity.this, movieItems);
                                     recyclerView.setAdapter(recyclerAdapter);
-                                    recyclerAdapter.notifyDataSetChanged();
                                 }
 
                             } catch (JSONException e) {
@@ -145,14 +146,12 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.sort_most_popular) {
             String popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + apiUtilsKey.getAPI_KEY();
             parseJson(popularUrl);
-            Toast.makeText(this, "Sort by popularity", Toast.LENGTH_SHORT).show();
             return true;
         }
 
         if (id == R.id.sort_top_rated) {
             String topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + apiUtilsKey.getAPI_KEY();
             parseJson(topRatedUrl);
-            Toast.makeText(this, "Sort by top rated", Toast.LENGTH_SHORT).show();
             return true;
         }
 
