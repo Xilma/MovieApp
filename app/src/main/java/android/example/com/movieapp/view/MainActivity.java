@@ -1,6 +1,5 @@
 package android.example.com.movieapp.view;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
@@ -8,15 +7,12 @@ import android.example.com.movieapp.model.RecyclerAdapter;
 import android.example.com.movieapp.utils.ApiUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -35,7 +31,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ProgressBar progressBar;
     private ApiUtils apiUtilsKey;
     private RecyclerView recyclerView;
     private List<Movie> movieItems;
@@ -47,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressBar = findViewById(R.id.pb_load);
         apiUtilsKey = new ApiUtils();
 
         recyclerView = findViewById(R.id.rv_movie_home);
@@ -57,86 +51,63 @@ public class MainActivity extends AppCompatActivity {
         movieItems = new ArrayList<>();
 
         requestQueue = Volley.newRequestQueue(this);
-        new DisplayMovies().execute();
+        String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
+        String url = BASE_URL + apiUtilsKey.getAPI_KEY();
+        parseJson(url);
     }
 
-    //AsyncTask to handle network request to moviedb
-    @SuppressLint("StaticFieldLeak")
-    public class DisplayMovies extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
-            String url = BASE_URL + apiUtilsKey.getAPI_KEY();
-
-            if(networkStatus(MainActivity.this)){
-                //Get all movies
-                parseJson(url);
-            }else{
-                Toast.makeText(MainActivity.this,"No Internet Connection",Toast.LENGTH_LONG).show();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void s) {
-            super.onPostExecute(s);
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-    }
-
+    //Get movie details using volley library and populate recyclerview
     private void parseJson(String moviesUrl) {
+        if (networkStatus(MainActivity.this)) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                //Acquire results object
+                                JSONArray resultsArray = response.getJSONArray("results");
+                                //Loop through items in resultsArray
+                                for (int i = 0; i < resultsArray.length(); i++) {
+                                    JSONObject resultsObject = resultsArray.getJSONObject(i);
+                                    //Set movie id value
+                                    int movieId = resultsObject.getInt("id");
+                                    //Set movie vote average value
+                                    double averageVote = resultsObject.getDouble("vote_average");
+                                    //Set movie title
+                                    String movieTitle = resultsObject.getString("title");
+                                    //Set movie poster path
+                                    String posterPath = resultsObject.getString("poster_path");
+                                    //Set movie original title
+                                    String originalTitle = resultsObject.getString("original_title");
+                                    //Set movie overview
+                                    String movieOverview = resultsObject.getString("overview");
+                                    //Set movie release date
+                                    String releaseDate = resultsObject.getString("release_date");
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try{
-                            //Acquire results object
-                            JSONArray resultsArray = response.getJSONArray("results");
-                            //Loop through items in resultsArray
-                            for (int i = 0; i < resultsArray.length(); i++) {
-                                JSONObject resultsObject = resultsArray.getJSONObject(i);
-                                //Set movie id value
-                                int movieId = resultsObject.getInt("id");
-                                //Set movie vote average value
-                                double averageVote = resultsObject.getDouble("vote_average");
-                                //Set movie title
-                                String movieTitle = resultsObject.getString("title");
-                                //Set movie poster path
-                                String posterPath = resultsObject.getString("poster_path");
-                                //Set movie original title
-                                String originalTitle = resultsObject.getString("original_title");
-                                //Set movie overview
-                                String movieOverview = resultsObject.getString("overview");
-                                //Set movie release date
-                                String releaseDate = resultsObject.getString("release_date");
+                                    movieItems.add(new Movie(movieId, averageVote, originalTitle, movieTitle,
+                                            movieOverview, releaseDate, posterPath));
 
-                                movieItems.add(new Movie(movieId, averageVote, originalTitle, movieTitle,
-                                        movieOverview, releaseDate, posterPath));
+                                    recyclerAdapter = new RecyclerAdapter(MainActivity.this, movieItems);
+                                    recyclerView.setAdapter(recyclerAdapter);
+                                    recyclerAdapter.notifyDataSetChanged();
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-
-                            recyclerAdapter = new RecyclerAdapter(MainActivity.this, movieItems);
-                            recyclerView.setAdapter(recyclerAdapter);
-
-                        }catch (JSONException e){
-                            e.printStackTrace();
                         }
-                    }
-                }, new Response.ErrorListener() {
+                    }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-        requestQueue.add(request);
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            });
+            requestQueue.add(request);
+
+        } else {
+            Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
+        }
     }
 
     //Method to check if device is connected to internet or not
@@ -174,12 +145,14 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.sort_most_popular) {
             String popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + apiUtilsKey.getAPI_KEY();
             parseJson(popularUrl);
+            Toast.makeText(this, "Sort by popularity", Toast.LENGTH_SHORT).show();
             return true;
         }
 
         if (id == R.id.sort_top_rated) {
             String topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + apiUtilsKey.getAPI_KEY();
             parseJson(topRatedUrl);
+            Toast.makeText(this, "Sort by top rated", Toast.LENGTH_SHORT).show();
             return true;
         }
 

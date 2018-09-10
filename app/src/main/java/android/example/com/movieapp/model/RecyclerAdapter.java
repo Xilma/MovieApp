@@ -49,6 +49,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             public void onClick(View view) {
                 Intent movieDetails = new Intent(context, DetailsActivity.class);
                 movieDetails.putExtra("Thumbnail", moviePoster.getPosterPath());
+                movieDetails.putExtra("Title", moviePoster.getTitle());
+                movieDetails.putExtra("ReleaseDate", moviePoster.getReleaseDate());
+                movieDetails.putExtra("UserRating", moviePoster.getVoteAverage());
+                movieDetails.putExtra("Synopsis", moviePoster.getOverview());
                 context.startActivity(movieDetails);
             }
         });
