@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-        movieItems = new ArrayList<>();
-
         requestQueue = Volley.newRequestQueue(this);
         String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
         String url = BASE_URL + apiUtilsKey.getAPI_KEY();
@@ -69,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
+                                movieItems = new ArrayList<>();
+
                                 //Acquire results object
                                 JSONArray resultsArray = response.getJSONArray("results");
                                 //Loop through items in resultsArray
