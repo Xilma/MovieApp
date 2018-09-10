@@ -12,3 +12,7 @@ Note: Replace your API key in the following location: app/src/main/java/android/
 ## Third-party libraries used
 1. Picasso
 2. Volley
+
+## Acknowledgments
+1. Udacity Android course
+2. Stackoverflow
