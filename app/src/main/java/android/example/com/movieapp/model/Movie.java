@@ -9,7 +9,7 @@ public class Movie implements Serializable {
     private String releaseDate;
     private String posterPath;
 
-    public Movie(){
+    public Movie() {
     }
 
     public Movie(String voteAverage, String title, String overview, String releaseDate, String posterPath) {

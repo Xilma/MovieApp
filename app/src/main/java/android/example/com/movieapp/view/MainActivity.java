@@ -1,7 +1,9 @@
 package android.example.com.movieapp.view;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
 import android.example.com.movieapp.model.RecyclerAdapter;
@@ -14,7 +16,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -50,9 +51,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
         requestQueue = Volley.newRequestQueue(this);
-        String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
-        String url = BASE_URL + apiUtilsKey.getAPI_KEY();
-        parseJson(url);
+        if (!networkStatus(this)) displayErrorMessage();
+        else {
+            String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
+            String url = BASE_URL + apiUtilsKey.getAPI_KEY();
+            parseJson(url);
+        }
     }
 
     //Get movie details using volley library and populate recyclerview
@@ -61,54 +65,49 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.show();
         progressDialog.setMessage("Loading movies...");
 
-        if (networkStatus(MainActivity.this)) {
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                movieItems = new ArrayList<>();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            movieItems = new ArrayList<>();
 
-                                //Acquire results object
-                                JSONArray resultsArray = response.getJSONArray("results");
-                                //Loop through items in resultsArray
-                                for (int i = 0; i < resultsArray.length(); i++) {
-                                    JSONObject resultsObject = resultsArray.getJSONObject(i);
-                                    //Set movie vote average value
-                                    String averageVote = resultsObject.getString("vote_average");
-                                    //Set movie title
-                                    String movieTitle = resultsObject.getString("title");
-                                    //Set movie poster path
-                                    String posterPath = resultsObject.getString("poster_path");
-                                    //Set movie overview
-                                    String movieOverview = resultsObject.getString("overview");
-                                    //Set movie release date
-                                    String releaseDate = resultsObject.getString("release_date");
+                            //Acquire results object
+                            JSONArray resultsArray = response.getJSONArray("results");
+                            //Loop through items in resultsArray
+                            for (int i = 0; i < resultsArray.length(); i++) {
+                                JSONObject resultsObject = resultsArray.getJSONObject(i);
+                                //Set movie vote average value
+                                String averageVote = resultsObject.getString("vote_average");
+                                //Set movie title
+                                String movieTitle = resultsObject.getString("title");
+                                //Set movie poster path
+                                String posterPath = resultsObject.getString("poster_path");
+                                //Set movie overview
+                                String movieOverview = resultsObject.getString("overview");
+                                //Set movie release date
+                                String releaseDate = resultsObject.getString("release_date");
 
-                                    movieItems.add(new Movie(averageVote, movieTitle,
-                                            movieOverview, releaseDate, posterPath));
+                                movieItems.add(new Movie(averageVote, movieTitle,
+                                        movieOverview, releaseDate, posterPath));
 
-                                    progressDialog.dismiss();
-                                    recyclerAdapter = new RecyclerAdapter(MainActivity.this, movieItems);
-                                    recyclerView.setAdapter(recyclerAdapter);
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                                progressDialog.dismiss();
+                                recyclerAdapter = new RecyclerAdapter(MainActivity.this, movieItems);
+                                recyclerView.setAdapter(recyclerAdapter);
                             }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    }, new Response.ErrorListener() {
+                    }
+                }, new Response.ErrorListener() {
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
-            requestQueue.add(request);
-
-        } else {
-            Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
-        }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        requestQueue.add(request);
     }
 
     //Method to check if device is connected to internet or not
@@ -121,6 +120,34 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    private void displayErrorMessage() {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage(R.string.no_network);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                R.string.reload_button,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        finish();
+                        startActivity(getIntent());
+                    }
+                });
+
+        builder1.setNegativeButton(
+                R.string.close_button,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        MainActivity.this.finish();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
     @Override

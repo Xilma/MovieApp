@@ -13,4 +13,7 @@
     <string name="release_date">Release date:</string>
     <string name="rating">Rating:</string>
     <string name="synopsis">Synopsis:</string>
+    <string name="no_network">No internet connection!</string>
+    <string name="reload_button">Reload</string>
+    <string name="close_button">Close</string>
 </resources>
