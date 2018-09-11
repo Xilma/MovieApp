@@ -5,7 +5,7 @@ This is an app that enables users to view movies available in moviedb, sort the 
 
 ## Pre-requisites
 1. An API Key from (https://api.themoviedb.org). One needs to have a registered account in order to request for an API key.
-Note: Replace your API key in the following location: app/src/main/java/android/example/com/movieapp/utils/ApiUtils.java
+Note: Replace your API key in the following location: gradle.properties
 
 2. Android API target of 19 and above.
 
@@ -16,3 +16,4 @@ Note: Replace your API key in the following location: app/src/main/java/android/
 ## Acknowledgments
 1. Udacity Android course
 2. Stackoverflow
+3. Uplabs - icon
