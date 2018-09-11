@@ -4,10 +4,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.example.com.movieapp.BuildConfig;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
 import android.example.com.movieapp.model.RecyclerAdapter;
-import android.example.com.movieapp.utils.ApiUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ApiUtils apiUtilsKey;
+    private static final String API_KEY = BuildConfig.API_KEY;
     private RecyclerView recyclerView;
     private List<Movie> movieItems;
     private RecyclerAdapter recyclerAdapter;
@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        apiUtilsKey = new ApiUtils();
-
         recyclerView = findViewById(R.id.rv_movie_home);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         if (!networkStatus(this)) displayErrorMessage();
         else {
             String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
-            String url = BASE_URL + apiUtilsKey.getAPI_KEY();
+            String url = BASE_URL + API_KEY;
             parseJson(url);
         }
     }
@@ -168,20 +166,20 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        String language = "&language=en-US";
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.sort_most_popular) {
-            String popularUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=" + apiUtilsKey.getAPI_KEY();
+            String popularUrl = "https://api.themoviedb.org/3/movie/popular?&api_key=" + API_KEY + language;
             parseJson(popularUrl);
             return true;
         }
 
         if (id == R.id.sort_top_rated) {
-            String topRatedUrl = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc&api_key=" + apiUtilsKey.getAPI_KEY();
+            String topRatedUrl = "https://api.themoviedb.org/3/movie/top_rated?&api_key=" + API_KEY + language;
             parseJson(topRatedUrl);
             return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
