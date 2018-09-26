@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 import android.example.com.movieapp.BuildConfig;
 import android.example.com.movieapp.R;
 import android.example.com.movieapp.model.Movie;
-import android.example.com.movieapp.model.RecyclerAdapter;
+import android.example.com.movieapp.adapter.MainAdapter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String API_KEY = BuildConfig.API_KEY;
     private RecyclerView recyclerView;
     private List<Movie> movieItems;
-    private RecyclerAdapter recyclerAdapter;
+    private MainAdapter mainAdapter;
     private RequestQueue requestQueue;
 
     @Override
@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
                                         movieOverview, releaseDate, posterPath));
 
                                 progressDialog.dismiss();
-                                recyclerAdapter = new RecyclerAdapter(MainActivity.this, movieItems);
-                                recyclerView.setAdapter(recyclerAdapter);
+                                mainAdapter = new MainAdapter(MainActivity.this, movieItems);
+                                recyclerView.setAdapter(mainAdapter);
                             }
 
                         } catch (JSONException e) {

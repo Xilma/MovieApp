@@ -3,18 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="android.example.com.movieapp">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        tools:ignore="AllowBackup, GoogleAppIndexingWarning"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".view.MainActivity"
+        android:theme="@style/AppTheme"
+        tools:ignore="AllowBackup, GoogleAppIndexingWarning">
+        <activity
+            android:name=".view.MainActivity"
             android:label="@string/main_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,8 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".view.DetailsActivity"
+        <activity
+            android:name=".view.DetailsActivity"
             android:label="@string/details_title"
             android:parentActivityName=".view.MainActivity">
 
@@ -32,6 +33,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity" />
         </activity>
+        <activity android:name=".view.FavoriteActivity"></activity>
     </application>
 
 </manifest>

@@ -11,21 +11,24 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
-public class DetailsActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    private TextView movieTitle, releaseDate, userRating, synopsis;
-    private ImageView movieThumbnail;
+public class DetailsActivity extends AppCompatActivity {
+    @BindView(R.id.movie_title) TextView movieTitle;
+    @BindView(R.id.movie_release_date) TextView releaseDate;
+    @BindView(R.id.movie_user_rating) TextView userRating;
+    @BindView(R.id.movie_overview) TextView synopsis;
+    @BindView(R.id.movie_poster_details) ImageView movieThumbnail;
+    @BindView(R.id.movie_poster_stretch) ImageView movieStretch;
+    @BindView(R.id.favorite_movie_not) ImageView favoriteMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        movieTitle = findViewById(R.id.movie_title);
-        releaseDate = findViewById(R.id.movie_release_date);
-        userRating = findViewById(R.id.movie_user_rating);
-        synopsis = findViewById(R.id.movie_overview);
-        movieThumbnail = findViewById(R.id.movie_poster_details);
+        ButterKnife.bind(this);
 
         populateUI();
     }
@@ -45,6 +48,7 @@ public class DetailsActivity extends AppCompatActivity {
         userRating.setText(voteAverage);
         synopsis.setText(overview);
         Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieThumbnail);
+        Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieStretch);
         setActionBarTitle(title);
     }
 

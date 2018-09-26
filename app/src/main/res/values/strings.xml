@@ -16,4 +16,6 @@
     <string name="no_network">No internet connection!</string>
     <string name="reload_button">Reload</string>
     <string name="close_button">Close</string>
+    <string name="trailers">Trailers:</string>
+    <string name="reviews">Reviews:</string>
 </resources>

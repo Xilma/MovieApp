@@ -1,8 +1,9 @@
-package android.example.com.movieapp.model;
+package android.example.com.movieapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.example.com.movieapp.R;
+import android.example.com.movieapp.model.Movie;
 import android.example.com.movieapp.view.DetailsActivity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -16,18 +17,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private Context context;
     private List<Movie> movieList;
 
-    public RecyclerAdapter(Context context, List<Movie> movieList) {
+    public MainAdapter(Context context, List<Movie> movieList) {
         this.context = context;
         this.movieList = movieList;
     }
 
     @NonNull
     @Override
-    public RecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MainAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_grid_item, parent, false);
         return new ViewHolder(v);
     }
