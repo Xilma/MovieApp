@@ -1,18 +1,13 @@
-package android.example.com.movieapp.view;
+package rilma.example.com.movieapp.view;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.example.com.movieapp.BuildConfig;
-import android.example.com.movieapp.R;
-import android.example.com.movieapp.model.Movie;
-import android.example.com.movieapp.adapter.MainAdapter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +26,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import rilma.example.com.movieapp.BuildConfig;
+import rilma.example.com.movieapp.R;
+import rilma.example.com.movieapp.adapter.MainAdapter;
+import rilma.example.com.movieapp.model.Movie;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String API_KEY = BuildConfig.API_KEY;
@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.rv_movie_home);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 300);
+        recyclerView.setLayoutManager(layoutManager);
 
         requestQueue = Volley.newRequestQueue(this);
         if (!networkStatus(this)) displayErrorMessage();

@@ -1,4 +1,4 @@
-package android.example.com.movieapp.model;
+package rilma.example.com.movieapp.model;
 
 import java.io.Serializable;
 

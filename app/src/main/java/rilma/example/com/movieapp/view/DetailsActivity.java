@@ -1,7 +1,6 @@
-package android.example.com.movieapp.view;
+package rilma.example.com.movieapp.view;
 
 import android.content.Intent;
-import android.example.com.movieapp.R;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -13,6 +12,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rilma.example.com.movieapp.R;
 
 public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.movie_title) TextView movieTitle;
@@ -26,7 +26,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+        setContentView(rilma.example.com.movieapp.R.layout.activity_details);
 
         ButterKnife.bind(this);
 

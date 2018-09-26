@@ -1,4 +1,4 @@
-package android.example.com.movieapp;
+package rilma.example.com.movieapp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

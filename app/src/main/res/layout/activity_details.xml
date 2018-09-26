@@ -15,7 +15,7 @@
             android:id="@+id/movie_poster_stretch"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:contentDescription="@string/image_description"
             android:src="@drawable/ic_launcher_background"/>
 
@@ -119,6 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_star_black"
+                android:contentDescription="@string/image_description"
                 android:layout_below="@id/movie_user_rating"
                 android:layout_marginTop="@dimen/paddingLarge"
                 android:layout_marginStart="@dimen/margin_small"
@@ -131,6 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_star_yellow"
+                android:contentDescription="@string/image_description"
                 android:layout_below="@id/movie_user_rating"
                 android:layout_marginTop="@dimen/paddingLarge"
                 android:layout_marginStart="@dimen/margin_small"
@@ -157,7 +159,7 @@
                 android:layout_below="@id/tv_synopsis"
                 android:layout_margin="@dimen/padding"
                 android:layout_marginStart="@dimen/paddingLarge"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textSize="16sp"/>
 

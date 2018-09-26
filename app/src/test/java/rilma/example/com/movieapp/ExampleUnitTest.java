@@ -1,4 +1,4 @@
-package android.example.com.movieapp;
+package rilma.example.com.movieapp;
 
 import org.junit.Test;
 

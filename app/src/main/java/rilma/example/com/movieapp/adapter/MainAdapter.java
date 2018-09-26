@@ -1,10 +1,7 @@
-package android.example.com.movieapp.adapter;
+package rilma.example.com.movieapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.example.com.movieapp.R;
-import android.example.com.movieapp.model.Movie;
-import android.example.com.movieapp.view.DetailsActivity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +13,10 @@ import android.widget.LinearLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import rilma.example.com.movieapp.R;
+import rilma.example.com.movieapp.model.Movie;
+import rilma.example.com.movieapp.view.DetailsActivity;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     private Context context;
