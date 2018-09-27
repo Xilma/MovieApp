@@ -33,7 +33,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity" />
         </activity>
-        <activity android:name=".view.FavoriteActivity"></activity>
+
+        <activity
+            android:name=".view.FavoriteActivity"
+            android:label="@string/favorites"
+            android:parentActivityName=".view.MainActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

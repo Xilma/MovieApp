@@ -141,6 +141,7 @@ public class DetailsActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+    //Get review details using volley library and populate recyclerview
     private void parseJsonReview(String moviesUrl) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
                 new Response.Listener<JSONObject>() {

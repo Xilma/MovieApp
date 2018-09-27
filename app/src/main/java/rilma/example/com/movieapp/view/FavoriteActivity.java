@@ -10,4 +10,10 @@ public class FavoriteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(rilma.example.com.movieapp.R.layout.activity_favorite);
     }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+        FavoriteActivity.this.finish();
+    }
 }

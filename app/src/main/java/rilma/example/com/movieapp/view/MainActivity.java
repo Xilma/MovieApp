@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -186,6 +188,15 @@ public class MainActivity extends AppCompatActivity {
             String topRatedUrl = "https://api.themoviedb.org/3/movie/top_rated?&api_key=" + API_KEY + language;
             parseJson(topRatedUrl);
             return true;
+        }
+
+        if(id == R.id.sort_favorites){
+            Toast.makeText(this, "Favorites", Toast.LENGTH_SHORT).show();
+        }
+
+        if(id == R.id.action_favorites){
+            Intent openFavorites = new Intent (MainActivity.this, FavoriteActivity.class);
+            startActivity(openFavorites);
         }
 
         return super.onOptionsItemSelected(item);
