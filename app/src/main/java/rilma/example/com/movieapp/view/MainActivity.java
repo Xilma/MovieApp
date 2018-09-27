@@ -26,6 +26,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rilma.example.com.movieapp.BuildConfig;
 import rilma.example.com.movieapp.R;
 import rilma.example.com.movieapp.adapter.MainAdapter;
@@ -34,7 +36,8 @@ import rilma.example.com.movieapp.model.Movie;
 public class MainActivity extends AppCompatActivity {
 
     private static final String API_KEY = BuildConfig.API_KEY;
-    private RecyclerView recyclerView;
+    @BindView(R.id.rv_movie_home) RecyclerView recyclerView;
+
     private List<Movie> movieItems;
     private MainAdapter mainAdapter;
     private RequestQueue requestQueue;
@@ -44,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.rv_movie_home);
+        ButterKnife.bind(this);
+
         recyclerView.setHasFixedSize(true);
         AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 300);
         recyclerView.setLayoutManager(layoutManager);
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         if (!networkStatus(this)) displayErrorMessage();
         else {
-            String BASE_URL = "https://api.themoviedb.org/3/discover/movie?api_key=";
+            String BASE_URL = "https://api.themoviedb.org/3/movie/popular?&api_key=";
             String url = BASE_URL + API_KEY;
             parseJson(url);
         }
@@ -76,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
                             //Loop through items in resultsArray
                             for (int i = 0; i < resultsArray.length(); i++) {
                                 JSONObject resultsObject = resultsArray.getJSONObject(i);
+                                //Set movie id value
+                                int movieId = resultsObject.getInt("id");
                                 //Set movie vote average value
                                 String averageVote = resultsObject.getString("vote_average");
                                 //Set movie title
@@ -87,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                 //Set movie release date
                                 String releaseDate = resultsObject.getString("release_date");
 
-                                movieItems.add(new Movie(averageVote, movieTitle,
+                                movieItems.add(new Movie(movieId, averageVote, movieTitle,
                                         movieOverview, releaseDate, posterPath));
 
                                 progressDialog.dismiss();

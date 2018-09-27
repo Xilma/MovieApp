@@ -50,6 +50,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent movieDetails = new Intent(context, DetailsActivity.class);
+                movieDetails.putExtra("MovieId", moviePoster.getMovieId());
                 movieDetails.putExtra("Thumbnail", moviePoster.getPosterPath());
                 movieDetails.putExtra("Title", moviePoster.getTitle());
                 movieDetails.putExtra("ReleaseDate", moviePoster.getReleaseDate());

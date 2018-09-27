@@ -3,6 +3,7 @@ package rilma.example.com.movieapp.model;
 import java.io.Serializable;
 
 public class Movie implements Serializable {
+    private int movieId;
     private String voteAverage;
     private String title;
     private String overview;
@@ -12,12 +13,21 @@ public class Movie implements Serializable {
     public Movie() {
     }
 
-    public Movie(String voteAverage, String title, String overview, String releaseDate, String posterPath) {
+    public Movie(int movieId, String voteAverage, String title, String overview, String releaseDate, String posterPath) {
+        this.movieId = movieId;
         this.voteAverage = voteAverage;
         this.title = title;
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.posterPath = posterPath;
+    }
+
+    public int getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
     }
 
     public String getVoteAverage() {
