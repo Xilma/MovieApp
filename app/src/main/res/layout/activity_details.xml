@@ -16,8 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:contentDescription="@string/image_description"
-            android:src="@drawable/ic_launcher_background"/>
+            android:contentDescription="@string/image_description" />
 
         <RelativeLayout
             android:layout_width="wrap_content"

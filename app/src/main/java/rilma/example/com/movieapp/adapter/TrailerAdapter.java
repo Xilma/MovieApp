@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -53,6 +54,16 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
                 context.startActivity(intent);
             }
         });
+
+        holder.shareIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, YOUTUBE_URL);
+                context.startActivity(Intent.createChooser(sharingIntent, "Share with..."));
+            }
+        });
     }
 
     @Override
@@ -63,6 +74,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.trailer_title)
         TextView trailerTitle;
+        @BindView(R.id.share_movie)
+        ImageView shareIcon;
 
         ViewHolder(View itemView){
             super(itemView);
