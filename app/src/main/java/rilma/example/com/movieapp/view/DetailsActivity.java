@@ -62,7 +62,7 @@ public class DetailsActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL, false);
         rvTrailer.setLayoutManager(layoutManager);
-        
+
         requestQueue = Volley.newRequestQueue(this);
 
         if (!networkStatus(this)) displayErrorMessage();
@@ -107,9 +107,9 @@ public class DetailsActivity extends AppCompatActivity {
                             for (int i = 0; i < resultsArray.length(); i++) {
                                 JSONObject resultsObject = resultsArray.getJSONObject(i);
                                 //Set trailer name value
-                                String trailerName = resultsObject.getString("key");
+                                String trailerName = resultsObject.getString("name");
                                 //Set trailer key value
-                                String trailerKey = resultsObject.getString("name");
+                                String trailerKey = resultsObject.getString("key");
 
                                 trailerClips.add(new Trailer(trailerKey, trailerName));
 
