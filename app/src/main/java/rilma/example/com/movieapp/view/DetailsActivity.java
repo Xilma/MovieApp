@@ -29,7 +29,9 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rilma.example.com.movieapp.R;
+import rilma.example.com.movieapp.adapter.ReviewsAdapter;
 import rilma.example.com.movieapp.adapter.TrailerAdapter;
+import rilma.example.com.movieapp.model.Review;
 import rilma.example.com.movieapp.model.Trailer;
 
 import static rilma.example.com.movieapp.BuildConfig.API_KEY;
@@ -44,9 +46,14 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.movie_poster_stretch) ImageView movieStretch;
     @BindView(R.id.favorite_movie_not) ImageView favoriteMovie;
     @BindView(R.id.rv_movie_trailer) RecyclerView rvTrailer;
+    @BindView(R.id.rv_movie_reviews) RecyclerView rvReviews;
 
     private TrailerAdapter trailerAdapter;
     private List<Trailer> trailerClips;
+
+    private ReviewsAdapter reviewsAdapter;
+    private List<Review> reviewList;
+
     private RequestQueue requestQueue;
     public static final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
     public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
@@ -59,9 +66,10 @@ public class DetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         rvTrailer.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false);
-        rvTrailer.setLayoutManager(layoutManager);
+        rvTrailer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        rvReviews.setHasFixedSize(true);
+        rvReviews.setLayoutManager(new LinearLayoutManager(this));
 
         requestQueue = Volley.newRequestQueue(this);
 
@@ -89,10 +97,12 @@ public class DetailsActivity extends AppCompatActivity {
         setActionBarTitle(title);
 
         String trailerUrl = MOVIE_BASE_URL + movieId + "/videos?api_key=" + API_KEY + "&language=en-US";
+        String reviewUrl = MOVIE_BASE_URL + movieId + "/reviews?api_key=" + API_KEY + "&language=en-US";
         parseJsonTrailer(trailerUrl);
+        parseJsonReview(reviewUrl);
     }
 
-    //Get movie details using volley library and populate recyclerview
+    //Get trailer details using volley library and populate recyclerview
     private void parseJsonTrailer(String moviesUrl) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
                 new Response.Listener<JSONObject>() {
@@ -115,6 +125,44 @@ public class DetailsActivity extends AppCompatActivity {
 
                                 trailerAdapter = new TrailerAdapter(DetailsActivity.this, trailerClips);
                                 rvTrailer.setAdapter(trailerAdapter);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        requestQueue.add(request);
+    }
+
+    private void parseJsonReview(String moviesUrl) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            reviewList = new ArrayList<>();
+
+                            //Acquire results object
+                            JSONArray resultsArray = response.getJSONArray("results");
+                            //Loop through items in resultsArray
+                            for (int i = 0; i < resultsArray.length(); i++) {
+                                JSONObject resultsObject = resultsArray.getJSONObject(i);
+                                //Get review author value
+                                String author = resultsObject.getString("author");
+                                //Get review content value
+                                String content = resultsObject.getString("content");
+
+                                reviewList.add(new Review(author, content));
+
+                                reviewsAdapter = new ReviewsAdapter(DetailsActivity.this, reviewList);
+                                rvReviews.setAdapter(reviewsAdapter);
                             }
 
                         } catch (JSONException e) {
