@@ -44,6 +44,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity" />
         </activity>
+        
+        <!--Registering the FavoritesContentProvider -->
+        <provider
+            android:authorities="rilma.example.com.movieapp"
+            android:name="rilma.example.com.movieapp.data.FavoritesContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

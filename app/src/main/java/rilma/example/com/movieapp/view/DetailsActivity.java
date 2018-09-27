@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rilma.example.com.movieapp.R;
 import rilma.example.com.movieapp.adapter.ReviewsAdapter;
 import rilma.example.com.movieapp.adapter.TrailerAdapter;
@@ -44,7 +46,8 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.movie_overview) TextView synopsis;
     @BindView(R.id.movie_poster_details) ImageView movieThumbnail;
     @BindView(R.id.movie_poster_stretch) ImageView movieStretch;
-    @BindView(R.id.favorite_movie_not) ImageView favoriteMovie;
+    @BindView(R.id.favorite_movie_not) ImageView favoriteMovieNot;
+    @BindView(R.id.favorite_movie_yes) ImageView favoriteMovieYes;
     @BindView(R.id.rv_movie_trailer) RecyclerView rvTrailer;
     @BindView(R.id.rv_movie_reviews) RecyclerView rvReviews;
 
@@ -77,6 +80,13 @@ public class DetailsActivity extends AppCompatActivity {
         else populateUI();
     }
 
+    @OnClick(R.id.favorite_movie_not)
+    public void addToDatabase() {
+        favoriteMovieNot.setVisibility(View.GONE);
+        favoriteMovieYes.setVisibility(View.VISIBLE);
+    }
+
+
     private void populateUI() {
         Intent detailsIntent = getIntent();
         final String thumbnail = detailsIntent.getStringExtra("Thumbnail");
@@ -95,11 +105,16 @@ public class DetailsActivity extends AppCompatActivity {
         Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieThumbnail);
         Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieStretch);
         setActionBarTitle(title);
+        
+        checkFavorite();
 
         String trailerUrl = MOVIE_BASE_URL + movieId + "/videos?api_key=" + API_KEY + "&language=en-US";
         String reviewUrl = MOVIE_BASE_URL + movieId + "/reviews?api_key=" + API_KEY + "&language=en-US";
         parseJsonTrailer(trailerUrl);
         parseJsonReview(reviewUrl);
+    }
+
+    private void checkFavorite() {
     }
 
     //Get trailer details using volley library and populate recyclerview
