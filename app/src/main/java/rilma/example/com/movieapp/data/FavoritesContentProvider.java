@@ -53,7 +53,7 @@ public class FavoritesContentProvider extends ContentProvider {
                 break;
             case FAVORITE_WITH_ID:
                 String movieId = uri.getPathSegments().get(1);
-                selection = "movie_id" + movieId;
+                selection = "movie_id=" + movieId;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri : " + uri);

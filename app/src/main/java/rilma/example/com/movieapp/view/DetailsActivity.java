@@ -129,10 +129,12 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void checkFavorite() {
-        Uri uri = Uri.parse(FavoriteContract.FavoriteEntry.CONTENT_URI + "/");
+        String id = Integer.toString(MOVIE_ID);
+        String movieID = "/" + id;
+        Uri uri = Uri.parse(FavoriteContract.FavoriteEntry.CONTENT_URI + movieID);
         Cursor cursor = getContentResolver().query(uri,
                 null,
-                Integer.toString(MOVIE_ID),
+                null,
                 null,
                 null);
         assert cursor != null;
