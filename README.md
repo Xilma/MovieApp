@@ -1,7 +1,7 @@
 # MovieApp
-## Popular Movies: Stage 1
+## Popular Movies: Stage 2
 
-This is an app that enables users to view movies available in moviedb, sort the order by most popular, top-rated and view the details of the movie selected (title, date of release, user-rating and synopsis).
+This is an app that enables users to view movies available in moviedb, sort the order by most popular, top-rated and view the details of the movie selected (title, date of release, user-rating, synopsis, trailers and reviews).
 
 ## Pre-requisites
 1. An API Key from (https://api.themoviedb.org). One needs to have a registered account in order to request for an API key.
@@ -16,4 +16,4 @@ Note: Replace your API key in the following location: gradle.properties
 ## Acknowledgments
 1. Udacity Android course
 2. Stackoverflow
-3. Uplabs - icon
+3. Uplab Designs - icon
