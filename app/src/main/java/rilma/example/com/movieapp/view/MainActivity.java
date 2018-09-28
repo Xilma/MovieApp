@@ -1,18 +1,21 @@
 package rilma.example.com.movieapp.view;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,21 +29,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rilma.example.com.movieapp.BuildConfig;
 import rilma.example.com.movieapp.R;
+import rilma.example.com.movieapp.adapter.FavoritesAdapter;
 import rilma.example.com.movieapp.adapter.MainAdapter;
+import rilma.example.com.movieapp.data.FavoriteContract;
 import rilma.example.com.movieapp.model.Movie;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String API_KEY = BuildConfig.API_KEY;
-    @BindView(R.id.rv_movie_home) RecyclerView recyclerView;
+    @BindView(R.id.rv_movie_home)
+    RecyclerView recyclerView;
 
+    private ProgressDialog progressDialog;
+    private Parcelable recyclerViewState;
     private List<Movie> movieItems;
+    private AutoFitGridLayoutManager layoutManager;
     private MainAdapter mainAdapter;
     private RequestQueue requestQueue;
 
@@ -51,8 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        progressDialog = new ProgressDialog(this);
+        
         recyclerView.setHasFixedSize(true);
-        AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 300);
+        layoutManager = new AutoFitGridLayoutManager(this, 300);
         recyclerView.setLayoutManager(layoutManager);
 
         requestQueue = Volley.newRequestQueue(this);
@@ -66,9 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Get movie details using volley library and populate recyclerview
     private void parseJson(String moviesUrl) {
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.show();
-        progressDialog.setMessage("Loading movies...");
+        displayProgress("Loading movies...");
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, moviesUrl, null,
                 new Response.Listener<JSONObject>() {
@@ -98,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                 movieItems.add(new Movie(movieId, averageVote, movieTitle,
                                         movieOverview, releaseDate, posterPath));
 
-                                progressDialog.dismiss();
+                                removeProgress();
                                 mainAdapter = new MainAdapter(MainActivity.this, movieItems);
                                 recyclerView.setAdapter(mainAdapter);
                             }
@@ -115,6 +125,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         requestQueue.add(request);
+    }
+
+    public void displayProgress(String message){
+        progressDialog.show();
+        progressDialog.setMessage(message);
+
+    }
+
+    public void removeProgress(){
+        progressDialog.dismiss();
     }
 
     //Method to check if device is connected to internet or not
@@ -190,16 +210,80 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        if(id == R.id.sort_favorites){
-            Toast.makeText(this, "Favorites", Toast.LENGTH_SHORT).show();
-        }
-
-        if(id == R.id.action_favorites){
-            Intent openFavorites = new Intent (MainActivity.this, FavoriteActivity.class);
-            startActivity(openFavorites);
+        if (id == R.id.sort_favorites) {
+            new FavoriteMoviesFetchTask().execute();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
+    public class FavoriteMoviesFetchTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            displayProgress("Loading Favorites...");
+        }
+
+        @Override
+        protected Void doInBackground(Void... items) {
+            movieItems = new ArrayList<>();
+
+            Uri uri = FavoriteContract.FavoriteEntry.CONTENT_URI;
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+
+            assert cursor != null;
+            int count = cursor.getCount();
+            movieItems = Arrays.asList(new Movie[cursor.getCount()]);
+            if (count == 0) {
+                return null;
+            }
+            if (cursor.moveToFirst()) {
+                do {
+                    int movie_id = cursor.getInt(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID));
+                    String movie_title = cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TITLE));
+                    String poster_path = cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH));
+                    String release_date = cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_RELEASE_DATE));
+                    String user_rating = cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_USER_RATING));
+                    String synopsis = cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_SYNOPSIS));
+
+                    movieItems.set(cursor.getPosition(), new Movie(movie_id, user_rating, movie_title, synopsis, release_date, poster_path));
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            removeProgress();
+            FavoritesAdapter favoritesAdapter = new FavoritesAdapter(MainActivity.this, movieItems);
+            recyclerView.setAdapter(favoritesAdapter);
+        }
+    }
+
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        if (recyclerView != null) {
+            String KEY_RECYCLER_STATE = "recycler_state";
+            state.putParcelable(KEY_RECYCLER_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
+            recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        }
+    }
+
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+
+        if(state != null)
+        recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (movieItems != null) layoutManager.onRestoreInstanceState((Parcelable) movieItems);
+    }
 }

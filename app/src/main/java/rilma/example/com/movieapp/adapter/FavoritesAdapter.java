@@ -56,6 +56,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
                 movieDetails.putExtra("ReleaseDate", moviePoster.getReleaseDate());
                 movieDetails.putExtra("UserRating", moviePoster.getVoteAverage());
                 movieDetails.putExtra("Synopsis", moviePoster.getOverview());
+                movieDetails.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 context.startActivity(movieDetails);
             }
         });

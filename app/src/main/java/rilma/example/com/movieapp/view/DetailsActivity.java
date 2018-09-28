@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -81,7 +82,9 @@ public class DetailsActivity extends AppCompatActivity {
     private ReviewsAdapter reviewsAdapter;
     private List<Review> reviewList;
 
+    private Parcelable recyclerViewState;
     private RequestQueue requestQueue;
+    private LinearLayoutManager horizontal, vertical;
 
     public static int MOVIE_ID;
     public static String POSTER_PATH;
@@ -96,10 +99,12 @@ public class DetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         rvTrailer.setHasFixedSize(true);
-        rvTrailer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        horizontal = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rvTrailer.setLayoutManager(horizontal);
 
         rvReviews.setHasFixedSize(true);
-        rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        vertical = new LinearLayoutManager(this);
+        rvReviews.setLayoutManager(vertical);
 
         requestQueue = Volley.newRequestQueue(this);
 
@@ -319,25 +324,18 @@ public class DetailsActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationStart(Animator arg0) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onAnimationRepeat(Animator arg0) {
-                // TODO Auto-generated method stub
-
             }
 
             @Override
             public void onAnimationEnd(Animator arg0) {
-                // TODO Auto-generated method stub
-
             }
 
             @Override
             public void onAnimationCancel(Animator arg0) {
-                // TODO Auto-generated method stub
-
             }
         });
         animators.start();
@@ -350,5 +348,36 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
+    }
+
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        if (rvReviews != null) {
+            String KEY_RECYCLER_STATE = "recycler_state";
+            state.putParcelable(KEY_RECYCLER_STATE, rvReviews.getLayoutManager().onSaveInstanceState());
+            recyclerViewState = rvReviews.getLayoutManager().onSaveInstanceState();
+        }
+        if (rvTrailer != null) {
+            String KEY_RECYCLER_STATE = "recycler_state";
+            state.putParcelable(KEY_RECYCLER_STATE, rvTrailer.getLayoutManager().onSaveInstanceState());
+            recyclerViewState = rvTrailer.getLayoutManager().onSaveInstanceState();
+        }
+    }
+
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+
+        if(state != null){
+            rvTrailer.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+            rvReviews.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (trailerClips != null) horizontal.onRestoreInstanceState((Parcelable) trailerClips);
+        if (reviewList != null) vertical.onRestoreInstanceState((Parcelable) reviewList);
     }
 }
