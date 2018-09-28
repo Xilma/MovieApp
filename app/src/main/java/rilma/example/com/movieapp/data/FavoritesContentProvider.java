@@ -43,10 +43,32 @@ public class FavoritesContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         final SQLiteDatabase db = favoritesDbHelper.getReadableDatabase();
 
-        return null;
+        int match = sUriMatcher.match(uri);
+        Cursor cursor;
+        switch (match) {
+            case FAVORITES:
+                break;
+            case FAVORITE_WITH_ID:
+                String movieId = uri.getPathSegments().get(1);
+                selection = "movie_id" + movieId;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri : " + uri);
+        }
+
+        cursor = db.query(FavoriteContract.FavoriteEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
+        cursor.setNotificationUri(Objects.requireNonNull(getContext()).getContentResolver(), uri);
+
+        return cursor;
     }
 
     @Nullable
@@ -83,7 +105,24 @@ public class FavoritesContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+        final SQLiteDatabase db = favoritesDbHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int favoritesDeleted = 0;
+        switch (match) {
+            case FAVORITES:
+                break;
+            case FAVORITE_WITH_ID:
+                String favorite_id = uri.getPathSegments().get(1);
+                favoritesDeleted = db.delete(FavoriteContract.FavoriteEntry.TABLE_NAME, "movie_id=?", new String[]{favorite_id});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri : " + uri);
+        }
+
+        if (favoritesDeleted != 0) {
+            Objects.requireNonNull(getContext()).getContentResolver().notifyChange(uri, null);
+        }
+        return favoritesDeleted;
     }
 
     @Override

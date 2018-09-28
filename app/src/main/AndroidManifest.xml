@@ -33,7 +33,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity" />
         </activity>
-
         <activity
             android:name=".view.FavoriteActivity"
             android:label="@string/favorites"
@@ -44,12 +43,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity" />
         </activity>
-        
-        <!--Registering the FavoritesContentProvider -->
+
+        <!-- Registering the FavoritesContentProvider -->
         <provider
+            android:name=".data.FavoritesContentProvider"
             android:authorities="rilma.example.com.movieapp"
-            android:name="rilma.example.com.movieapp.data.FavoritesContentProvider"
-            android:exported="false"/>
+            android:exported="false" />
+
+        <activity
+            android:name=".view.FavoriteDetailActivity"
+            android:parentActivityName=".view.FavoriteActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.FavoriteActivity" />
+        </activity>
     </application>
 
 </manifest>

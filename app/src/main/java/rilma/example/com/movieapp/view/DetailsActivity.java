@@ -1,8 +1,11 @@
 package rilma.example.com.movieapp.view;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,6 +37,7 @@ import butterknife.OnClick;
 import rilma.example.com.movieapp.R;
 import rilma.example.com.movieapp.adapter.ReviewsAdapter;
 import rilma.example.com.movieapp.adapter.TrailerAdapter;
+import rilma.example.com.movieapp.data.FavoriteContract;
 import rilma.example.com.movieapp.model.Review;
 import rilma.example.com.movieapp.model.Trailer;
 
@@ -40,16 +45,26 @@ import static rilma.example.com.movieapp.BuildConfig.API_KEY;
 import static rilma.example.com.movieapp.view.MainActivity.networkStatus;
 
 public class DetailsActivity extends AppCompatActivity {
-    @BindView(R.id.movie_title) TextView movieTitle;
-    @BindView(R.id.movie_release_date) TextView releaseDate;
-    @BindView(R.id.movie_user_rating) TextView userRating;
-    @BindView(R.id.movie_overview) TextView synopsis;
-    @BindView(R.id.movie_poster_details) ImageView movieThumbnail;
-    @BindView(R.id.movie_poster_stretch) ImageView movieStretch;
-    @BindView(R.id.favorite_movie_not) ImageView favoriteMovieNot;
-    @BindView(R.id.favorite_movie_yes) ImageView favoriteMovieYes;
-    @BindView(R.id.rv_movie_trailer) RecyclerView rvTrailer;
-    @BindView(R.id.rv_movie_reviews) RecyclerView rvReviews;
+    @BindView(R.id.movie_title)
+    TextView movieTitle;
+    @BindView(R.id.movie_release_date)
+    TextView releaseDate;
+    @BindView(R.id.movie_user_rating)
+    TextView userRating;
+    @BindView(R.id.movie_overview)
+    TextView synopsis;
+    @BindView(R.id.movie_poster_details)
+    ImageView movieThumbnail;
+    @BindView(R.id.movie_poster_stretch)
+    ImageView movieStretch;
+    @BindView(R.id.favorite_movie_not)
+    ImageView favoriteMovieNot;
+    @BindView(R.id.favorite_movie_yes)
+    ImageView favoriteMovieYes;
+    @BindView(R.id.rv_movie_trailer)
+    RecyclerView rvTrailer;
+    @BindView(R.id.rv_movie_reviews)
+    RecyclerView rvReviews;
 
     private TrailerAdapter trailerAdapter;
     private List<Trailer> trailerClips;
@@ -58,6 +73,9 @@ public class DetailsActivity extends AppCompatActivity {
     private List<Review> reviewList;
 
     private RequestQueue requestQueue;
+
+    public static int MOVIE_ID;
+    public static String POSTER_PATH;
     public static final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
     public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
@@ -76,45 +94,96 @@ public class DetailsActivity extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
 
+        Intent details = getIntent();
+        MOVIE_ID = details.getIntExtra("MovieId", 12345);
+        POSTER_PATH = details.getStringExtra("Thumbnail");
+
         if (!networkStatus(this)) displayErrorMessage();
-        else populateUI();
+        else {
+            checkFavorite();
+            populateUI();
+        }
     }
-
-    @OnClick(R.id.favorite_movie_not)
-    public void addToDatabase() {
-        favoriteMovieNot.setVisibility(View.GONE);
-        favoriteMovieYes.setVisibility(View.VISIBLE);
-    }
-
 
     private void populateUI() {
         Intent detailsIntent = getIntent();
-        final String thumbnail = detailsIntent.getStringExtra("Thumbnail");
         String BASE_URL = "https://image.tmdb.org/t/p/w185/";
 
         final String title = detailsIntent.getStringExtra("Title");
         final String releaseYear = detailsIntent.getStringExtra("ReleaseDate");
         final String voteAverage = detailsIntent.getStringExtra("UserRating");
         final String overview = detailsIntent.getStringExtra("Synopsis");
-        final int movieId = detailsIntent.getIntExtra("MovieId", 12345);
 
         movieTitle.setText(title);
         releaseDate.setText(releaseYear);
         userRating.setText(voteAverage);
         synopsis.setText(overview);
-        Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieThumbnail);
-        Picasso.with(DetailsActivity.this).load(BASE_URL + thumbnail).into(movieStretch);
+        Picasso.with(DetailsActivity.this).load(BASE_URL + POSTER_PATH).into(movieThumbnail);
+        Picasso.with(DetailsActivity.this).load(BASE_URL + POSTER_PATH).into(movieStretch);
         setActionBarTitle(title);
-        
-        checkFavorite();
 
-        String trailerUrl = MOVIE_BASE_URL + movieId + "/videos?api_key=" + API_KEY + "&language=en-US";
-        String reviewUrl = MOVIE_BASE_URL + movieId + "/reviews?api_key=" + API_KEY + "&language=en-US";
+        String trailerUrl = MOVIE_BASE_URL + MOVIE_ID + "/videos?api_key=" + API_KEY + "&language=en-US";
+        String reviewUrl = MOVIE_BASE_URL + MOVIE_ID + "/reviews?api_key=" + API_KEY + "&language=en-US";
         parseJsonTrailer(trailerUrl);
         parseJsonReview(reviewUrl);
     }
 
     private void checkFavorite() {
+        Uri uri = Uri.parse(FavoriteContract.FavoriteEntry.CONTENT_URI + "/");
+        Cursor cursor = getContentResolver().query(uri,
+                null,
+                Integer.toString(MOVIE_ID),
+                null,
+                null);
+        assert cursor != null;
+        if(!cursor.moveToNext()){
+            favoriteMovieNot.setVisibility(View.VISIBLE);
+            favoriteMovieYes.setVisibility(View.GONE);
+        } else{
+            favoriteMovieYes.setVisibility(View.VISIBLE);
+            favoriteMovieNot.setVisibility(View.GONE);
+        }
+
+        cursor.close();
+    }
+
+    //Add to database when grey favorite icon is clicked
+    @OnClick(R.id.favorite_movie_not)
+    public void addToDatabase() {
+        String favoriteTitle = movieTitle.getText().toString();
+        String favoriteReleaseDate = releaseDate.getText().toString();
+        String favoriteUserRating = userRating.getText().toString();
+        String favoriteSynopsis = synopsis.getText().toString();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, MOVIE_ID);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_TITLE, favoriteTitle);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH, POSTER_PATH);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_RELEASE_DATE, favoriteReleaseDate);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_USER_RATING, favoriteUserRating);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_SYNOPSIS, favoriteSynopsis);
+
+        Uri uri = getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+        if(uri != null){
+            Toast.makeText(DetailsActivity.this, "Added to Favorites", Toast.LENGTH_SHORT).show();
+
+            favoriteMovieNot.setVisibility(View.GONE);
+            favoriteMovieYes.setVisibility(View.VISIBLE);
+        }
+    }
+
+    //Delete from database when yellow favorite icon is clicked
+    @OnClick(R.id.favorite_movie_yes)
+    public void deleteFromDatabase(){
+        String favoriteId = Integer.toString(MOVIE_ID);
+        Uri uri = FavoriteContract.FavoriteEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(favoriteId).build();
+        int favoriteDeleted = getContentResolver().delete(uri, null, null);
+        if(favoriteDeleted == 1){
+            Toast.makeText(DetailsActivity.this, "Deleted from Favorites", Toast.LENGTH_SHORT).show();
+        }
+        favoriteMovieNot.setVisibility(View.VISIBLE);
+        favoriteMovieYes.setVisibility(View.GONE);
     }
 
     //Get trailer details using volley library and populate recyclerview
@@ -230,6 +299,5 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
-        DetailsActivity.this.finish();
     }
 }
