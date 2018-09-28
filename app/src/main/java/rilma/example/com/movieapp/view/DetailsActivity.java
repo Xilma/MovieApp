@@ -1,5 +1,8 @@
 package rilma.example.com.movieapp.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -7,11 +10,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +50,10 @@ import static rilma.example.com.movieapp.BuildConfig.API_KEY;
 import static rilma.example.com.movieapp.view.MainActivity.networkStatus;
 
 public class DetailsActivity extends AppCompatActivity {
+    @BindView(R.id.details_scrollview)
+    ScrollView scrollView;
+    @BindView(R.id.fab_details)
+    FloatingActionButton fabButton;
     @BindView(R.id.movie_title)
     TextView movieTitle;
     @BindView(R.id.movie_release_date)
@@ -82,7 +91,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(rilma.example.com.movieapp.R.layout.activity_details);
+        setContentView(R.layout.details_framework);
 
         ButterKnife.bind(this);
 
@@ -139,9 +148,11 @@ public class DetailsActivity extends AppCompatActivity {
                 null);
         assert cursor != null;
         if(!cursor.moveToNext()){
+            //Display movie as not 'favorite'
             favoriteMovieNot.setVisibility(View.VISIBLE);
             favoriteMovieYes.setVisibility(View.GONE);
         } else{
+            //Display movie as 'favorite'
             favoriteMovieYes.setVisibility(View.VISIBLE);
             favoriteMovieNot.setVisibility(View.GONE);
         }
@@ -292,6 +303,44 @@ public class DetailsActivity extends AppCompatActivity {
 
         AlertDialog alert11 = builder1.create();
         alert11.show();
+    }
+
+    @OnClick(R.id.fab_details)
+    public void moveToTop(){
+        int x = 0;
+        int y = 0;
+        ObjectAnimator xTranslate = ObjectAnimator.ofInt(scrollView, "scrollX", x);
+        ObjectAnimator yTranslate = ObjectAnimator.ofInt(scrollView, "scrollY", y);
+
+        AnimatorSet animators = new AnimatorSet();
+        animators.setDuration(1000L);
+        animators.playTogether(xTranslate, yTranslate);
+        animators.addListener(new Animator.AnimatorListener() {
+
+            @Override
+            public void onAnimationStart(Animator arg0) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        animators.start();
     }
 
     public void setActionBarTitle(String title) {
